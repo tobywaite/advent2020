@@ -1,3 +1,4 @@
+from advent.solution import Solution
 from collections import Counter
 
 class AdapterChain():
@@ -18,22 +19,29 @@ class AdapterChain():
             self.memo[currentValue] = sum([self.countValidBranches(idx) for idx in range(index+1, index+numBranches+1)])
 
         return self.memo.get(currentValue)
-        
 
-with open("input.txt") as f:
-    inputValues = sorted([int(adapter.strip("\n")) for adapter in f.readlines()])
 
-initialValue = 0
-terminalValue = inputValues[-1] + 3
-adapters = [initialValue] + inputValues + [terminalValue] # Add the 'initial adapter' & 'final adapter' values to the list
+class Adapters(Solution):
+    def setup(self):
+        initialValue = 0
+        adapters = sorted(self.input)
+        terminalValue = adapters[-1] + 3
+        self.adapters = [initialValue] + adapters + [terminalValue] # Add the 'initial adapter' & 'final adapter' values to the list
 
-# Problem 1: Find distribution of differences between subsequent adapter values
-diffs = [(adapters[idx+1] - val) for idx, val in enumerate(adapters[:-1])]
+    def inputTransform(self, line): 
+        return int(line.strip("\n"))
+    
+    def solution1(self):
+        # Problem 1: Find distribution of differences between subsequent adapter values
+        diffs = [(self.adapters[idx+1] - val) for idx, val in enumerate(self.adapters[:-1])]
+        distribution = Counter(diffs)
+        return distribution[1] * distribution[3]
 
-distribution = Counter(diffs)
-solution1 = distribution[1] * distribution[3]
-print("Solution 1: {}".format(solution1))
+    def solution2(self):
+        # problem 2: count the number of valid adapter chains
+        solution2 = AdapterChain(self.adapters).countValidBranches()
+        print("Solution 2: {}".format(solution2))
 
-# problem 2: count the number of valid adapter chains
-solution2 = AdapterChain(adapters).countValidBranches()
-print("Solution 2: {}".format(solution2))
+
+solution = Adapters(problemNumber=10)
+solution.run()
